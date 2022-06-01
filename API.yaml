@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  title: Final Assignment - Modern Application Development Problem Statement
+  description: >
+    <h3>Deck_Data Table Schema</h3> 
+    <table>
+      <thead>
+        <th>Column Name</th>
+        <th>Column Type</th>
+        <th>Constraints</th>
+      </thead>
+      <tbody>
+      <tr>
+        <td>deck_id</td>
+        <td>Integer</td>
+        <td>Primary Key, Auto Increment</td>
+      </tr>
+      <tr>
+        <td>deck_master_name</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr>
+      <tr>
+        <td>deck_name</td>
+        <td>String</td>
+        <td>Unique, Not Null</td>
+      </tr>
+      <tr>
+        <td>deck_answer</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>deck_option_1</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>deck_option_2</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>deck_option_3</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>deck_option_4</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>deck_language</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>deck_rating</td>
+        <td>Integer</td>
+        <td></td>
+      </tr><tr>
+        <td>deck_rating_count</td>
+        <td>Integer</td>
+        <td></td>
+      </tr>
+    </table>
+
+    <h3>Deck_Scores Table Schema</h3> 
+    <table>
+      <thead>
+        <th>Column Name</th>
+        <th>Column Type</th>
+        <th>Constraints</th>
+      </thead>
+      <tbody>
+      <tr>
+        <td>field_id</td>
+        <td>Integer</td>
+        <td>Primary Key, Auto Increment</td>
+      </tr>
+      <tr>
+        <td>username</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr>
+      <tr>
+        <td>deck_name</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr>
+      <tr>
+        <td>deck_master_name</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr>
+      <tr>
+        <td>deck_id</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>start_time</td>
+        <td>String</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>start_time_perf</td>
+        <td>Integer</td>
+        <td>Not Null</td>
+      </tr><tr>
+        <td>end_time</td>
+        <td>String</td>
+        <td></td>
+      </tr><tr>
+        <td>end_time_perf</td>
+        <td>Integer</td>
+        <td></td>
+      </tr><tr>
+        <td>score</td>
+        <td>Integer</td>
+        <td></td>
+      </tr>
+    </table>
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8080/
+paths:
+  /api/user/{username}:
+    description: End point to read scores of a user using username = username.
+    get:
+      description: Operation to Read User Scores.
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            example: 'Moizali'
+      responses:
+        '200':
+          description: Request Successful
+          content:
+            application/json:
+              schema:
+                title: course object
+                type: object
+                properties:
+                  deck_master_name:
+                    type: string
+                    example: HTML
+                  deck_name:
+                    type: string
+                    example: Curl
+                  start_time:
+                    type: string
+                    example: 24/11/21 19:08:42
+                  score:
+                    type: integer
+                    example: 9
+        '500':
+          description: Internal Server Error
+        '404':
+          description: User not found
+
+  /api/deck:
+    description: End point to read ratings of all the decks that hae rating.
+    get:
+      description: Operation to Read deck ratings.
+      responses:
+        '200':
+          description: Request Successful
+          content:
+            application/json:
+              schema:
+                title: course object
+                type: object
+                properties:
+                  deck_master_name:
+                    type: string
+                    example: Hindi Language
+                  deck_name:
+                    type: string
+                    example: Dog in Hindi
+                  deck_rating:
+                    type: integer
+                    example: 3
+                  deck_rating_count:
+                    type: integer
+                    example: 1
+        '500':
+          description: Internal Server Error
+        '404':
+          description: No ratings available for any deck
+
