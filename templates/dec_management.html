@@ -1,53 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Flash Card Application - {{title}} </title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap.min.css') }}" >
         <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" >
-        <script src="{{ url_for('static',filename='jquery.min.js') }}"></script>
-        <script src="{{ url_for('static',filename='bootstrap.min.js') }}" ></script>
+        <title>Flash Card Application - {{title}} </title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" >
     </head>
     <body>
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <p class="navbar-brand" >Flash Card Application</p>
-                </div>
-                <div class="collapse navbar-collapse" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        {% block nav %}
-                            {% for navs in nav_page %}
-                                <li><a href="{{navs[0]}}">{{navs[1]}}</a></li>
-                            {% endfor %}
-                        {% endblock nav %}
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        {% block login %}
-                            {% if user_name|length > 0 %}
-                                <li><a>Logged in as {{user_name}}</a></li>
-                                <li><a href="/logout">Logout</a></li>
-                            {% else %}
-                                <li><a href="/login">Login</a></li>
-                            {% endif %}
-                        {% endblock login %}
+        <div class="container" id="app">
+            <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-black">
+                <a class="navbar-brand" href="/">Home</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/review">Review</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/dashboard?type=user">User Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/dashboard?type=deck">Deck Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/deck_management?type=">Deck Management</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/logout">Logout</a></li>
                     </ul>
                 </div>
-            </div>
-        </nav>
-        <div class="container-fluid text-center">
-            <div class="row content">
-                <div class="col-sm-8 text-left">
+            </nav>
+            {% block display %}
+                {% if type=='None' %}
                     <h2>Deck Management</h2>
                     {% block content %}
                         {% if deck_data|length > 0 %}
-                        <a href="/deck_management/create">+ Add a new Deck.</a>
+                        <a href="/deck_management?type=create">+ Add a new Deck.</a>
                         <br><br>
                             <table>
                                 <tr>
@@ -61,22 +47,183 @@
                                         <td>{{dec["deck_master_name"]}} </a></td>
                                         <td>{{dec["deck_name"]}}</td>
                                         <td>{{dec["deck_language"]}}</td>
-                                        <td><a href='/deck_management/{{dec["deck_id"]}}/update' >Update</a></td>
-                                        <td><a href='/deck_management/{{dec["deck_id"]}}/delete' >Delete</a></td>
+                                        <td><a href='/deck_management?type=update&deckid={{dec["deck_id"]}}'>Update</a></td>
+                                        <td><a href='/deck_management?type=delete&deckid={{dec["deck_id"]}}'>Delete</a></td>
                                     </tr>
                                 {% endfor %}
                             </table>
                         {% else %}
                             No deck found. Add the deck now!
                             <br><br>
-                            <a href="/deck_management/create">+ Add a new Deck.</a>
+                            <a href="/deck_management?type=create&">+ Add a new Deck.</a>
                         {% endif %}
                     {% endblock content %}
+                {% elif type=='create' %}
+                    <h2>Deck Management</h2>
+                    <form action='/deck_management?type=create' method="POST" >
+                        <table>
+                            <tr>
+                                <td>Deck Name:</td>
+                                <td><input type="text" name="deck_master_name" required></td>
+                            </tr>
+                            <tr>
+                                <td>Card Name:</td>
+                                <td><input type="text" name="deck_name" required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Answer:</td>
+                                <td><input type="text" name="deck_answer" required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 1:</td>
+                                <td><input type="text" name="deck_option_1" required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 2:</td>
+                                <td><input type="text" name="deck_option_2" required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 3:</td>
+                                <td><input type="text" name="deck_option_3" required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 4:</td>
+                                <td><input type="text" name="deck_option_4" required></td>
+                            </tr>
+                            <tr>
+                                <td>Language:</td>
+                                <td>
+                                    <select name="deck_language">
+                                        <option value=""></option>
+                                        <option value="Ao">Ao</option>
+                                        <option value="Assamese">Assamese</option>
+                                        <option value="Bangla">Bangla</option>
+                                        <option value="Bhili">Bhili</option>
+                                        <option value="Bhotia">Bhotia</option>
+                                        <option value="Boro">Boro</option>
+                                        <option value="English">English</option>
+                                        <option value="Garo">Garo</option>
+                                        <option value="Gondi">Gondi</option>
+                                        <option value="Gujarati">Gujarati</option>
+                                        <option value="Hindi">Hindi</option>
+                                        <option value="Kannada">Kannada</option>
+                                        <option value="Khasi">Khasi</option>
+                                        <option value="Kinnauri">Kinnauri</option>
+                                        <option value="Konkani">Konkani</option>
+                                        <option value="Konyak">Konyak</option>
+                                        <option value="Lakher">Lakher</option>
+                                        <option value="Lepcha">Lepcha</option>
+                                        <option value="Lushai">Lushai</option>
+                                        <option value="Malayalam">Malayalam</option>
+                                        <option value="Manipuri">Manipuri</option>
+                                        <option value="Marathi">Marathi</option>
+                                        <option value="Nepali">Nepali</option>
+                                        <option value="Nissi">Nissi</option>
+                                        <option value="Oriya">Oriya</option>
+                                        <option value="Punjabi">Punjabi</option>
+                                        <option value="Santali">Santali</option>
+                                        <option value="Sema">Sema</option>
+                                        <option value="Sindhi">Sindhi</option>
+                                        <option value="Tamil">Tamil</option>
+                                        <option value="Tangkhul">Tangkhul</option>
+                                        <option value="Telugu">Telugu</option>
+                                        <option value="Thadou">Thadou</option>
+                                        <option value="Tripuri">Tripuri</option>
+                                        <option value="Urdu">Urdu</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <input type="submit" value = "Submit">
+                    </form>
+                {% elif type=='update' %}
+                    <h2>Deck Management</h2>
+                    <form action='/deck_management?type=update&deckid={{deck["deck_id"]}}' method="POST" >
+                        <table>
+                            <tr>
+                                <td>Deck Name:</td>
+                                <td><input type="text" name="deck_master_name" value='{{deck["deck_master_name"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Card Name:</td>
+                                <td><input type="text" name="deck_name" value='{{deck["deck_name"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Answer:</td>
+                                <td><input type="text" name="deck_answer" value='{{deck["deck_answer"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 1:</td>
+                                <td><input type="text" name="deck_option_1" value='{{deck["deck_option_1"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 2:</td>
+                                <td><input type="text" name="deck_option_2" value='{{deck["deck_option_2"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 3:</td>
+                                <td><input type="text" name="deck_option_3" value='{{deck["deck_option_3"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Deck Option 4:</td>
+                                <td><input type="text" name="deck_option_4" value='{{deck["deck_option_4"]}}' required></td>
+                            </tr>
+                            <tr>
+                                <td>Language:</td>
+                                <td>
+                                    <select name="deck_language" >
+                                        <option value='{{deck["deck_language"]}}'>{{deck["deck_language"]}}</option>
+                                        <option value="Ao">Ao</option>
+                                        <option value="Assamese">Assamese</option>
+                                        <option value="Bangla">Bangla</option>
+                                        <option value="Bhili">Bhili</option>
+                                        <option value="Bhotia">Bhotia</option>
+                                        <option value="Boro">Boro</option>
+                                        <option value="Garo">Garo</option>
+                                        <option value="Gondi">Gondi</option>
+                                        <option value="Gujarati">Gujarati</option>
+                                        <option value="Hindi">Hindi</option>
+                                        <option value="Kannada">Kannada</option>
+                                        <option value="Khasi">Khasi</option>
+                                        <option value="Kinnauri">Kinnauri</option>
+                                        <option value="Konkani">Konkani</option>
+                                        <option value="Konyak">Konyak</option>
+                                        <option value="Lakher">Lakher</option>
+                                        <option value="Lepcha">Lepcha</option>
+                                        <option value="Lushai">Lushai</option>
+                                        <option value="Malayalam">Malayalam</option>
+                                        <option value="Manipuri">Manipuri</option>
+                                        <option value="Marathi">Marathi</option>
+                                        <option value="Nepali">Nepali</option>
+                                        <option value="Nissi">Nissi</option>
+                                        <option value="Oriya">Oriya</option>
+                                        <option value="Punjabi">Punjabi</option>
+                                        <option value="Santali">Santali</option>
+                                        <option value="Sema">Sema</option>
+                                        <option value="Sindhi">Sindhi</option>
+                                        <option value="Tamil">Tamil</option>
+                                        <option value="Tangkhul">Tangkhul</option>
+                                        <option value="Telugu">Telugu</option>
+                                        <option value="Thadou">Thadou</option>
+                                        <option value="Tripuri">Tripuri</option>
+                                        <option value="Urdu">Urdu</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <input type="submit" value = "Update">
+                    </form>
+                {% endif %}
+            {% endblock display %}
+            <footer class="text-center text-lg-start bg-light text-muted">
+                <div class="text-center p-1" style="background-color: rgba(0, 0, 0, 0.05);color: #052465">
+                    App Development Project - Created by Moizali Taj, Roll # 21f1003906.
+                    </font>
                 </div>
-            </div>
+            </footer>
         </div>
-        <footer class="container-fluid text-center">
-            <p>App Development Project - Created by Moizali Taj, Roll # 21f1003906.</p>
-        </footer>
     </body>
 </html>
+

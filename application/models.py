@@ -30,8 +30,8 @@ class Deck_Scores(db.Model):
     score = db.Column(db.Integer, )
 
 
-class Nav_Page_Info(db.Model):
-    __tablename__ = 'nav_page_info'
-    page_num = db.Column(db.Integer, primary_key=True, nullable=False)
-    page_name = db.Column(db.String, nullable=False)
-    page_path = db.Column(db.String, nullable=False)
+class Users(db.Model):
+    __tablename__ = 'users'
+    username = db.Column(db.String, primary_key=True)
+    password = db.Column(db.String, nullable=False)
+

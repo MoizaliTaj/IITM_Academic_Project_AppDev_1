@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" >
+        <title>Flash Card Application - {{title}} </title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" >
+        <style>
+            table, tr, td, th {
+            border:0px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" id="app">
+            <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-black">
+                <a class="navbar-brand" href="/">Home</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/review">Review</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/dashboard?type=user">User Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/dashboard?type=deck">Deck Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/deck_management?type=">Deck Management</a></li>
+                        <li class="nav-item"><a class="nav-link" style="color:white;" href="/logout">Logout</a></li>
+                    </ul>
+                </div>
+            </nav>
+            {% block review %}
+                {% if type=='reviewhome' %}
+                    <h2>Review</h2>
+                    <p>Select a Deck to proceed.</p>
+                    {% block deck_name %}
+                        {% if deck_name|length > 0 %}
+                            <ul>
+                            {% for deck in deck_name %}
+                                <li><a href="/review?deckname={{deck[0]}}&">{{deck[0]}}</a></li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No deck available.</p>
+                        {% endif %}
+                    {% endblock deck_name %}
+                {% elif type=='reviewquestion' %}
+                    <h2>Review</h2>
+                    {% block rating %}
+                        {% if rating == 'None' %}
+                            <p>No user rating is available for this card.</p>
+                        {% else %}
+                            <p>User rating for the below card is {{rating}} out of 5 and number of reviews are {{rating_count}}</p>
+                        {% endif %}
+                    {% endblock rating %}
+                    <div class="card">
+                        <p>Select the correct answer for {{data["deck_name"]}}</p>
+                        <form action='/review?field_id={{fld_id}}' method="POST">
+                            <input type="radio" name="answer" value='{{data["deck_option_1"]}}'><label>{{data["deck_option_1"]}}</label><br><br>
+                            <input type="radio" name="answer" value='{{data["deck_option_2"]}}'><label>{{data["deck_option_2"]}}</label><br><br>
+                            <input type="radio" name="answer" value='{{data["deck_option_3"]}}'><label>{{data["deck_option_3"]}}</label><br><br>
+                            <input type="radio" name="answer" value='{{data["deck_option_4"]}}'><label>{{data["deck_option_4"]}}</label><br><br><br>
+                            <input type="submit" class="text_size_large" value = "Submit">
+                        </form>
+                    </div>
+                {% elif type=='listdelconf' %}
+                    <p>Are you sure you want to delete proforma for <strong>{{CustName}}</strong>?</p>
+                    <table  style="border:0px;"><tr style="border:0px;"><td style="border:0px;"><form  action="/listdelete/{{CustName}}" method="POST"><input type="submit" value = "Yes, Delete"></form></td><td style="border:0px;"><form  action="/list" method="GET"><input type="submit" value = "No, Do not Delete"></form></td></tr></table>
+                {% elif type=='proddelconf' %}
+                    <p>Are you sure you want to delete?</p>
+                    <table  style="border:0px;"><tr style="border:0px;"><td style="border:0px;"><form  action="/deleteprodlist/{{primarykey}}" method="POST"><input type="submit" value = "Yes, Delete"></form></td><td style="border:0px;"><form  action="/list/{{customername}}" method="GET"><input type="submit" value = "No, Do not Delete"></form></td></tr></table>
+                {% elif type=='changepws' %}
+                    <p>Password updated successfully.</p>
+                    <meta http-equiv="Refresh" content="3; url='/'" />
+                {% elif type=='changepwe' %}
+                    <p>One or more error occurred information entered. Check the below and try again</p>
+                    <li>Your current password was incorrect.</li>
+                    <li>Your password needs to be minimum 8 characters.</li>
+                    <li>You new password was not entered correctly in both the fields.</li>
+                    <meta http-equiv="Refresh" content="5; url='/changepw'" />
+                {% endif %}
+            {% endblock review %}
+            <footer class="text-center text-lg-start bg-light text-muted">
+                <div class="text-center p-1" style="background-color: rgba(0, 0, 0, 0.05);color: #052465">
+                    App Development Project - Created by Moizali Taj, Roll # 21f1003906.
+                    </font>
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>
