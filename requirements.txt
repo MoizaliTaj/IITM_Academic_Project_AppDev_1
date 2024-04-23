@@ -1,6 +1,6 @@
-flask==2.0.1
-Flask-SQLAlchemy==2.5.1
-flask_restful
-SQLAlchemy~=1.4.27
-Werkzeug~=2.0.2
-flask_restful
+flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-RESTful==0.3.10
+SQLAlchemy==2.0.29
+Werkzeug==3.0.2
+
